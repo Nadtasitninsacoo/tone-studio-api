@@ -14,6 +14,11 @@ describe('SessionsController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.enableCors({
+      origin: ['http://localhost:3000', 'http://localhost:3001'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      exposedHeaders: ['Content-Disposition', 'Content-Length'],
+    });
     await app.init();
   });
 
@@ -80,6 +85,14 @@ describe('SessionsController (e2e)', () => {
       .expect(200);
     const sessionGet = getRes.body as MixerSession;
     expect(sessionGet.name).toBe('Mor Lam Live Show');
+
+    const preflightRes = await request(app.getHttpServer())
+      .options(`/sessions/${session.id}`)
+      .set('Origin', 'http://localhost:3000')
+      .set('Access-Control-Request-Method', 'PUT')
+      .set('Access-Control-Request-Headers', 'content-type')
+      .expect(204);
+    expect(preflightRes.headers['access-control-allow-methods']).toContain('PUT');
 
     // 4. Update the session (e.g. change master volume & panning)
     const updateRes = await request(app.getHttpServer())

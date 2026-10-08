@@ -34,7 +34,7 @@ async function bootstrap() {
   // fetch without this. `exposedHeaders` lets the client read the download filename.
   app.enableCors({
     origin: origins,
-    methods: ['GET', 'POST', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     exposedHeaders: ['Content-Disposition', 'Content-Length'],
   });
 
